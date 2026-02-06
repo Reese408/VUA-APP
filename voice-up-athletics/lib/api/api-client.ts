@@ -1,0 +1,1 @@
+//this will be the Type-Safe API client to interact with the backend services(ASP.NET Core Web API)
