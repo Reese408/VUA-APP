@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="VoiceUpAthletics.API/VoiceUpAthletics.API.csproj" />
+  <Project Path="VoiceUpAthletics.Core/VoiceUpAthletics.Core.csproj" />
+  <Project Path="VoiceUpAthletics.Infrastructure/VoiceUpAthletics.Infrastructure.csproj" />
+</Solution>
