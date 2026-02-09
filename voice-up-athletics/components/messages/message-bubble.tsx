@@ -29,7 +29,10 @@ export function MessageBubble({ message, isCurrentUser }: MessageBubbleProps) {
             {message.senderAnonymousAlias}
           </span>
           {message.isInternal && (
-            <Shield className="h-3 w-3 text-orange-500" title="Internal Note" />
+            <span className="inline-flex items-center gap-1 text-xs text-orange-600" title="Internal Note">
+              <Shield className="h-3 w-3" />
+              <span>Internal</span>
+            </span>
           )}
           <span className="text-xs text-muted-foreground">
             {format(new Date(message.createdAt), 'MMM d, h:mm a')}

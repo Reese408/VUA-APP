@@ -25,11 +25,10 @@ export default function CompleteProfilePage() {
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CompleteProfileDto>({
-    firstName: '',
-    lastName: '',
     sport: '',
     teamName: '',
-    phoneNumber: '',
+    academicYear: '',
+    studentId: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,30 +66,11 @@ export default function CompleteProfilePage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name *</Label>
-              <Input
-                id="firstName"
-                value={formData.firstName}
-                onChange={(e) =>
-                  setFormData({ ...formData, firstName: e.target.value })
-                }
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name *</Label>
-              <Input
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) =>
-                  setFormData({ ...formData, lastName: e.target.value })
-                }
-                required
-              />
-            </div>
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-md mb-6">
+            <p className="text-sm text-blue-900">
+              <strong>Note:</strong> Your name and email are provided by your university account.
+              Please complete the following information to finish your profile.
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -107,27 +87,47 @@ export default function CompleteProfilePage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="teamName">Team Name *</Label>
+            <Label htmlFor="teamName">Team Name (Optional)</Label>
             <Input
               id="teamName"
               value={formData.teamName}
               onChange={(e) =>
                 setFormData({ ...formData, teamName: e.target.value })
               }
-              required
+              placeholder="e.g., Varsity Basketball"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
-            <Input
-              id="phoneNumber"
-              type="tel"
-              value={formData.phoneNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, phoneNumber: e.target.value })
+            <Label htmlFor="academicYear">Academic Year *</Label>
+            <Select
+              value={formData.academicYear}
+              onValueChange={(value) =>
+                setFormData({ ...formData, academicYear: value })
               }
-              placeholder="(123) 456-7890"
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select your year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Freshman">Freshman</SelectItem>
+                <SelectItem value="Sophomore">Sophomore</SelectItem>
+                <SelectItem value="Junior">Junior</SelectItem>
+                <SelectItem value="Senior">Senior</SelectItem>
+                <SelectItem value="Graduate">Graduate</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="studentId">Student ID (Optional)</Label>
+            <Input
+              id="studentId"
+              value={formData.studentId}
+              onChange={(e) =>
+                setFormData({ ...formData, studentId: e.target.value })
+              }
+              placeholder="Your student ID"
             />
           </div>
 

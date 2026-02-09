@@ -27,7 +27,6 @@ export function UserTable({ users, onEditUser, onDeactivateUser }: UserTableProp
             <tr>
               <th className="text-left p-4 text-sm font-medium">User</th>
               <th className="text-left p-4 text-sm font-medium">Email</th>
-              <th className="text-left p-4 text-sm font-medium">Role</th>
               <th className="text-left p-4 text-sm font-medium">Sport</th>
               <th className="text-left p-4 text-sm font-medium">Status</th>
               <th className="text-right p-4 text-sm font-medium">Actions</th>
@@ -35,19 +34,16 @@ export function UserTable({ users, onEditUser, onDeactivateUser }: UserTableProp
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.userId} className="border-t hover:bg-muted/30">
+              <tr key={user.id} className="border-t hover:bg-muted/30">
                 <td className="p-4">
                   <div>
                     <p className="font-medium">{user.anonymousAlias}</p>
                     <p className="text-xs text-muted-foreground">
-                      ID: {user.userId}
+                      ID: {user.id}
                     </p>
                   </div>
                 </td>
                 <td className="p-4 text-sm">{user.email}</td>
-                <td className="p-4">
-                  <Badge variant="outline">{user.role}</Badge>
-                </td>
                 <td className="p-4 text-sm">{user.sport || 'N/A'}</td>
                 <td className="p-4">
                   <Badge
@@ -65,10 +61,10 @@ export function UserTable({ users, onEditUser, onDeactivateUser }: UserTableProp
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => onEditUser?.(user)}>
-                        Edit Role
+                        Edit Profile
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => onDeactivateUser?.(user.userId)}
+                        onClick={() => onDeactivateUser?.(user.id)}
                         className="text-red-600"
                       >
                         {user.isActive ? 'Deactivate' : 'Activate'}

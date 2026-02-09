@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Send } from 'lucide-react';
 import { sendMessageAction, CreateMessageDto } from '@/app/actions/messages';
+import { Input } from '../ui/input';
 
 interface MessageInputProps {
   reportId: number;
@@ -50,7 +51,7 @@ export function MessageInput({ reportId, isStaff, onMessageSent }: MessageInputP
       <div className="space-y-3">
         {isStaff && (
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="checkbox"
               id="internal"
               checked={isInternal}

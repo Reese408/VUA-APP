@@ -54,14 +54,19 @@ export default function MessagesPage() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  <h3 className="font-semibold">Report #{report.id}</h3>
-                  <Badge variant="outline">{report.status}</Badge>
+                  <h3 className="font-semibold">Report #{report.id} - {report.title}</h3>
+                  <Badge variant="outline">{report.statusDisplay}</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {report.description}
+                <p className="text-sm text-muted-foreground">
+                  {report.categoryDisplay} - {report.severityDisplay}
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">
                   {format(new Date(report.createdAt), 'MMM d, yyyy')}
+                  {report.unreadMessageCount > 0 && (
+                    <span className="ml-2 text-primary font-medium">
+                      {report.unreadMessageCount} unread
+                    </span>
+                  )}
                 </p>
               </div>
               <MessageSquare className="h-5 w-5 text-muted-foreground" />

@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createReportAction } from '@/app/actions/reports';
-import { CreateReportDto } from '@/lib/types/reports';
+import { CreateReportDto, ReportCategory, ReportSeverity } from '@/lib/types/reports';
 import { AlertCircle } from 'lucide-react';
 
 export function ReportForm() {
@@ -24,11 +24,13 @@ export function ReportForm() {
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CreateReportDto>({
+    title: '',
     category: 'Other',
     severity: 'Medium',
     description: '',
-    location: '',
+    incidentLocation: '',
     incidentDate: new Date().toISOString().split('T')[0],
+    involvedParties: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -66,21 +68,22 @@ export function ReportForm() {
           <Select
             value={formData.category}
             onValueChange={(value) =>
-              setFormData({ ...formData, category: value })
+              setFormData({ ...formData, category: value as ReportCategory })
             }
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="AcademicPressure">Academic Pressure</SelectItem>
-              <SelectItem value="Discrimination">Discrimination</SelectItem>
-              <SelectItem value="FinancialConcerns">Financial Concerns</SelectItem>
-              <SelectItem value="Harassment">Harassment</SelectItem>
-              <SelectItem value="HealthSafety">Health & Safety</SelectItem>
               <SelectItem value="MentalHealth">Mental Health</SelectItem>
+              <SelectItem value="ComplianceViolation">Compliance Violation</SelectItem>
+              <SelectItem value="Harassment">Harassment</SelectItem>
+              <SelectItem value="Discrimination">Discrimination</SelectItem>
+              <SelectItem value="SexualMisconduct">Sexual Misconduct</SelectItem>
               <SelectItem value="SubstanceAbuse">Substance Abuse</SelectItem>
-              <SelectItem value="TeamConflict">Team Conflict</SelectItem>
+              <SelectItem value="AcademicMisconduct">Academic Misconduct</SelectItem>
+              <SelectItem value="InjuryConcerns">Injury Concerns</SelectItem>
+              <SelectItem value="CoachingMisconduct">Coaching Misconduct</SelectItem>
               <SelectItem value="Other">Other</SelectItem>
             </SelectContent>
           </Select>
@@ -91,7 +94,7 @@ export function ReportForm() {
           <Select
             value={formData.severity}
             onValueChange={(value) =>
-              setFormData({ ...formData, severity: value })
+              setFormData({ ...formData, severity: value as ReportSeverity })
             }
           >
             <SelectTrigger>
@@ -104,6 +107,19 @@ export function ReportForm() {
               <SelectItem value="Critical">Critical</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="title">Title *</Label>
+          <Input
+            id="title"
+            placeholder="Brief title for the report"
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+            required
+          />
         </div>
 
         <div className="space-y-2">
@@ -121,13 +137,25 @@ export function ReportForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="location">Location (Optional)</Label>
+          <Label htmlFor="incidentLocation">Location (Optional)</Label>
           <Input
-            id="location"
+            id="incidentLocation"
             placeholder="Where did this occur?"
-            value={formData.location}
+            value={formData.incidentLocation}
             onChange={(e) =>
-              setFormData({ ...formData, location: e.target.value })
+              setFormData({ ...formData, incidentLocation: e.target.value })
+            }
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="involvedParties">Involved Parties (Optional)</Label>
+          <Input
+            id="involvedParties"
+            placeholder="Who was involved? (Anonymous)"
+            value={formData.involvedParties}
+            onChange={(e) =>
+              setFormData({ ...formData, involvedParties: e.target.value })
             }
           />
         </div>

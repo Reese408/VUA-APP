@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { updateReportStatusAction, assignReportAction } from '@/app/actions/reports';
+import { ReportStatus } from '@/lib/types/reports';
 import { useState } from 'react';
 
 export default function ReportDetailPage({
@@ -32,12 +33,12 @@ export default function ReportDetailPage({
     return <ErrorMessage message={error || 'Report not found'} />;
   }
 
-  const handleStatusUpdate = async (newStatus: string) => {
+  const handleStatusUpdate = async (newStatus: ReportStatus) => {
     setIsUpdating(true);
     try {
       const result = await updateReportStatusAction(reportId, {
         status: newStatus,
-        internalNotes: `Status updated to ${newStatus}`,
+        notes: `Status updated to ${newStatus}`,
       });
       if (result.success) {
         mutate();
@@ -61,15 +62,15 @@ export default function ReportDetailPage({
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <ReportStatusBadge status={report.status} />
-                <Badge variant="outline">{report.severity} Severity</Badge>
-                <Badge variant="outline">{report.category}</Badge>
+                <Badge variant="outline">{report.severityDisplay}</Badge>
+                <Badge variant="outline">{report.categoryDisplay}</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Reporter: {report.reporterAnonymousAlias}
+                Reporter: {report.submittedByAlias}
               </p>
-              {report.assignedToAlias && (
+              {report.assignedToName && (
                 <p className="text-sm text-muted-foreground">
-                  Assigned to: {report.assignedToAlias}
+                  Assigned to: {report.assignedToName}
                 </p>
               )}
             </div>
@@ -79,7 +80,7 @@ export default function ReportDetailPage({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => handleStatusUpdate('UnderReview')}
+                  onClick={() => handleStatusUpdate('InReview')}
                   disabled={isUpdating}
                 >
                   Review
@@ -87,10 +88,10 @@ export default function ReportDetailPage({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => handleStatusUpdate('InProgress')}
+                  onClick={() => handleStatusUpdate('UnderInvestigation')}
                   disabled={isUpdating}
                 >
-                  In Progress
+                  Investigate
                 </Button>
                 <Button
                   size="sm"
@@ -110,10 +111,10 @@ export default function ReportDetailPage({
             </p>
           </div>
 
-          {report.location && (
+          {report.incidentLocation && (
             <div>
               <h3 className="font-semibold mb-1">Location</h3>
-              <p className="text-sm text-muted-foreground">{report.location}</p>
+              <p className="text-sm text-muted-foreground">{report.incidentLocation}</p>
             </div>
           )}
 

@@ -38,17 +38,23 @@ export function ReportCard({ report }: ReportCardProps) {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
-            <h3 className="font-semibold text-sm">Report #{report.id}</h3>
+            <h3 className="font-semibold text-sm">Report #{report.id} - {report.title}</h3>
             <Badge
               variant="outline"
               className={severityColors[report.severity as keyof typeof severityColors]}
             >
-              {report.severity}
+              {report.severityDisplay}
             </Badge>
           </div>
-          
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-            {report.description}
+
+          <p className="text-sm text-muted-foreground mb-3">
+            {report.categoryDisplay}
+            {report.isFlagged && (
+              <span className="ml-2 text-red-600">• Flagged</span>
+            )}
+            {report.isEscalated && (
+              <span className="ml-2 text-orange-600">• Escalated</span>
+            )}
           </p>
 
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -56,9 +62,13 @@ export function ReportCard({ report }: ReportCardProps) {
               <Clock className="h-3 w-3" />
               {format(new Date(report.createdAt), 'MMM d, yyyy')}
             </div>
-            <div>Category: {report.category}</div>
-            {report.assignedToAlias && (
-              <div>Assigned to: {report.assignedToAlias}</div>
+            {report.assignedToName && (
+              <div>Assigned to: {report.assignedToName}</div>
+            )}
+            {report.unreadMessageCount > 0 && (
+              <div className="text-primary font-medium">
+                {report.unreadMessageCount} unread
+              </div>
             )}
           </div>
         </div>
@@ -69,7 +79,7 @@ export function ReportCard({ report }: ReportCardProps) {
               statusColors[report.status as keyof typeof statusColors]
             }`}
           >
-            {report.status}
+            {report.statusDisplay}
           </span>
         </div>
       </div>

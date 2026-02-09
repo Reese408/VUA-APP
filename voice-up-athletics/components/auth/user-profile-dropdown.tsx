@@ -12,7 +12,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { User, Settings, LogOut, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ROUTES, ROLES } from '@/lib/constants/roles';
+import { ROUTES } from '@/lib/constants/routes';
 
 export function UserProfileDropdown() {
   const { user, logout, isAdmin } = useAuth();
