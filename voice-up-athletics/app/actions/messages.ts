@@ -1,15 +1,30 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import { CurrentUserDto } from '@/lib/types/auth';
-import { CompleteProfileDto, UserProfileDto } from '@/lib/types/Users';
 import { ApiResponse } from '@/lib/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://localhost:7001';
 
+// Message types (matching backend DTOs)
+export interface MessageDto {
+  id: number;
+  reportId: number;
+  senderId: number;
+  senderAnonymousAlias: string;
+  content: string;
+  isInternal: boolean;
+  createdAt: string;
+}
+
+export interface CreateMessageDto {
+  reportId: number;
+  content: string;
+  isInternal: boolean;
+}
+
 /**
  * Get the access token from cookies
- * In production, tokens should be stored in httpOnly cookies
  */
 async function getAccessToken(): Promise<string | null> {
   const cookieStore = await cookies();
@@ -38,7 +53,7 @@ async function apiRequest<T>(
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
-      cache: 'no-store', // Ensure fresh data
+      cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -68,57 +83,43 @@ async function apiRequest<T>(
 }
 
 /**
- * Set access token in httpOnly cookie
- * This should be called after MSAL authentication
+ * Get all messages for a report
  */
-export async function setAccessTokenAction(token: string): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.set('access_token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60, // 1 hour
-    path: '/',
-  });
+export async function getMessagesAction(
+  reportId: number
+): Promise<ApiResponse<MessageDto[]>> {
+  return apiRequest<MessageDto[]>(`/api/reports/${reportId}/messages`);
 }
 
 /**
- * Clear access token from cookies (logout)
+ * Send a message on a report
  */
-export async function clearAccessTokenAction(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete('access_token');
+export async function sendMessageAction(
+  data: CreateMessageDto
+): Promise<ApiResponse<MessageDto>> {
+  const result = await apiRequest<MessageDto>(
+    `/api/reports/${data.reportId}/messages`,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }
+  );
+
+  if (result.success) {
+    revalidatePath(`/reports/${data.reportId}`);
+    revalidatePath(`/messages/${data.reportId}`);
+  }
+
+  return result;
 }
 
 /**
- * Get current authenticated user from backend
+ * Mark messages as read
  */
-export async function getCurrentUserAction(): Promise<
-  ApiResponse<CurrentUserDto>
-> {
-  return apiRequest<CurrentUserDto>('/api/auth/me');
-}
-
-/**
- * Complete user profile on first login
- */
-export async function completeProfileAction(
-  data: CompleteProfileDto
-): Promise<ApiResponse<UserProfileDto>> {
-  return apiRequest<UserProfileDto>('/api/auth/complete-profile', {
+export async function markMessagesAsReadAction(
+  reportId: number
+): Promise<ApiResponse<void>> {
+  return apiRequest<void>(`/api/reports/${reportId}/messages/mark-read`, {
     method: 'POST',
-    body: JSON.stringify(data),
-  });
-}
-
-/**
- * Update user profile
- */
-export async function updateProfileAction(
-  data: Partial<CompleteProfileDto>
-): Promise<ApiResponse<UserProfileDto>> {
-  return apiRequest<UserProfileDto>('/api/auth/profile', {
-    method: 'PUT',
-    body: JSON.stringify(data),
   });
 }
