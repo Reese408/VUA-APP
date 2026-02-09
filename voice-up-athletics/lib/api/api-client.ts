@@ -1,6 +1,8 @@
 import { useAuthStore } from '@/lib/store/auth-store';
 import { ApiResponse } from '@/lib/types/api';
 
+type JsonBody = Record<string, unknown>;
+
 class ApiClient {
   private baseUrl: string;
 
@@ -19,13 +21,13 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const token = this.getAccessToken();
 
-    const headers: Record<string, string> = {
+    const headers: HeadersInit = {
       'Content-Type': 'application/json',
-      ...(options.headers as Record<string, string>),
+      ...options.headers,
     };
 
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      (headers as Record<string, string>).Authorization = `Bearer ${token}`;
     }
 
     try {
@@ -36,19 +38,18 @@ class ApiClient {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({
-          success: false,
           message: `HTTP ${response.status}: ${response.statusText}`,
         }));
+
         return {
           success: false,
           data: null,
-          message: errorData.message || 'An error occurred',
-          errors: errorData.errors,
+          message: errorData.message ?? 'An error occurred',
+          errors: errorData.errors ?? [],
         };
       }
 
-      const data: ApiResponse<T> = await response.json();
-      return data;
+      return (await response.json()) as ApiResponse<T>;
     } catch (error) {
       return {
         success: false,
@@ -60,32 +61,32 @@ class ApiClient {
     }
   }
 
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string) {
     return this.request<T>(endpoint, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, body?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, body?: JsonBody) {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
     });
   }
 
-  async put<T>(endpoint: string, body?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, body?: JsonBody) {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: body ? JSON.stringify(body) : undefined,
     });
   }
 
-  async patch<T>(endpoint: string, body?: any): Promise<ApiResponse<T>> {
+  async patch<T>(endpoint: string, body?: JsonBody) {
     return this.request<T>(endpoint, {
       method: 'PATCH',
       body: body ? JSON.stringify(body) : undefined,
     });
   }
 
-  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+  async delete<T>(endpoint: string) {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 }
