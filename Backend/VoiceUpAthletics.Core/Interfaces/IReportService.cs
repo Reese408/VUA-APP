@@ -1,3 +1,4 @@
+using VoiceUpAthletics.Core.DTOs;
 using VoiceUpAthletics.Core.DTOs.Reports;
 using VoiceUpAthletics.Core.Enums;
 

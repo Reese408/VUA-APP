@@ -83,55 +83,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ========== RATE LIMITING ==========
-builder.Services.AddRateLimiter(options =>
-{
-    options.AddFixedWindowLimiter("fixed", limiterOptions =>
-    {
-        limiterOptions.PermitLimit = 100;
-        limiterOptions.Window = TimeSpan.FromMinutes(1);
-        limiterOptions.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-        limiterOptions.QueueLimit = 5;
-    });
-});
-
 // ========== API CONTROLLERS & SWAGGER ==========
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "Voice Up Athletics API",
-        Version = "v1",
-        Description = "Multi-tenant SaaS platform for NCAA student-athlete anonymous reporting"
-    });
-
-    // Add JWT authentication to Swagger
-    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme (Entra ID token). Example: 'Bearer {token}'",
-        Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-    {
-        {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-});
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -157,22 +112,19 @@ app.UseHttpsRedirection();
 // 5. CORS
 app.UseCors("AllowFrontend");
 
-// 6. Rate limiting
-app.UseRateLimiter();
-
-// 7. Authentication (Entra ID JWT validation)
+// 6. Authentication (Entra ID JWT validation)
 app.UseAuthentication();
 
-// 8. User sync (CRITICAL: Links Entra identity to our UserProfile table)
+// 7. User sync (CRITICAL: Links Entra identity to our UserProfile table)
 app.UseMiddleware<UserSyncMiddleware>();
 
-// 9. Tenant resolution (CRITICAL: Sets tenant context for query filtering)
+// 8. Tenant resolution (CRITICAL: Sets tenant context for query filtering)
 app.UseMiddleware<TenantMiddleware>();
 
-// 10. Authorization (checks [Authorize] and role policies)
+// 9. Authorization (checks [Authorize] and role policies)
 app.UseAuthorization();
 
-// 11. Map controllers
+// 10. Map controllers
 app.MapControllers();
 
 // ========== RUN APPLICATION ==========
