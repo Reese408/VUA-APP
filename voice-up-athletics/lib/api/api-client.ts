@@ -1,7 +1,8 @@
 import { useAuthStore } from '@/lib/store/auth-store';
 import { ApiResponse } from '@/lib/types/api';
 
-type JsonBody = Record<string, unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type JsonBody = any;
 
 class ApiClient {
   private baseUrl: string;
